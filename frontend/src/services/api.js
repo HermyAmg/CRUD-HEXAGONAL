@@ -1,4 +1,6 @@
 const BASE_URL = 'http://localhost:4000/api';
+// Servicio de red para los reportes del dashboard (solo admin).
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
 export const reportesApi = {
   resumen: async ({ desde, hasta, agrupacion, limite }, idUsuario) => {
@@ -10,32 +12,4 @@ export const reportesApi = {
     if (!res.ok) throw new Error(data?.error || 'Error al cargar los reportes');
     return data;
   },
-};
-
-export async function loginUsuario(credenciales) {
-  const res = await fetch(`${BASE_URL}/usuarios/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(credenciales),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión');
-  return data;
-}
-
-export async function registrarUsuario(datos) {
-  const res = await fetch(`${BASE_URL}/usuarios/registro`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(datos),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Error en el registro');
-  return data;
-}
-
-export default {
-  loginUsuario,
-  registrarUsuario,
-  reportesApi,
 };
