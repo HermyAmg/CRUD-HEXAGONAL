@@ -11,7 +11,7 @@ class Pedido {
         throw new Error('Cada detalle requiere id_producto y cantidad > 0');
       }
     });
-    if (!['pendiente', 'confirmado', 'cancelado'].includes(estado)) {
+    if (!['pendiente', 'pagado', 'enviado', 'cancelado'].includes(estado)) {
       throw new Error('Estado de pedido inválido');
     }
 

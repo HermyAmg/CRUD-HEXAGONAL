@@ -1,33 +1,41 @@
-const BASE_URL = 'http://3.84.172.57:4000/api';
+const BASE_URL = 'http://localhost:4000/api';
 
-async function request(path, options = {}) {
-  const res = await fetch(`${BASE_URL}${path}`, {
+export const reportesApi = {
+  resumen: async ({ desde, hasta, agrupacion, limite }, idUsuario) => {
+    const qs = new URLSearchParams({ desde, hasta, agrupacion, limite }).toString();
+    const res = await fetch(`${BASE_URL}/reportes/resumen?${qs}`, {
+      headers: { 'x-usuario-id': String(idUsuario) },
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(data?.error || 'Error al cargar los reportes');
+    return data;
+  },
+};
+
+export async function loginUsuario(credenciales) {
+  const res = await fetch(`${BASE_URL}/usuarios/login`, {
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    ...options,
+    body: JSON.stringify(credenciales),
   });
-  const data = await res.json().catch(() => null);
-  if (!res.ok) throw new Error(data?.error || 'Error en la solicitud');
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión');
   return data;
 }
 
-export const usuariosApi = {
-  registrar: (datos) => request('/usuarios/registro', { method: 'POST', body: JSON.stringify(datos) }),
-  login: (datos) => request('/usuarios/login', { method: 'POST', body: JSON.stringify(datos) }),
-  listar: () => request('/usuarios'),
-  actualizar: (id, datos) => request(`/usuarios/${id}`, { method: 'PUT', body: JSON.stringify(datos) }),
-  eliminar: (id) => request(`/usuarios/${id}`, { method: 'DELETE' }),
-};
+export async function registrarUsuario(datos) {
+  const res = await fetch(`${BASE_URL}/usuarios/registro`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(datos),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error en el registro');
+  return data;
+}
 
-export const productosApi = {
-  crear: (datos) => request('/productos', { method: 'POST', body: JSON.stringify(datos) }),
-  listar: () => request('/productos'),
-  actualizar: (id, datos) => request(`/productos/${id}`, { method: 'PUT', body: JSON.stringify(datos) }),
-  eliminar: (id) => request(`/productos/${id}`, { method: 'DELETE' }),
-};
-
-export const pedidosApi = {
-  crear: (datos) => request('/pedidos', { method: 'POST', body: JSON.stringify(datos) }),
-  listar: () => request('/pedidos'),
-  actualizarEstado: (id, estado) => request(`/pedidos/${id}`, { method: 'PUT', body: JSON.stringify({ estado }) }),
-  eliminar: (id) => request(`/pedidos/${id}`, { method: 'DELETE' }),
+export default {
+  loginUsuario,
+  registrarUsuario,
+  reportesApi,
 };

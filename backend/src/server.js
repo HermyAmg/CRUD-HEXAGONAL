@@ -14,6 +14,7 @@ app.use(express.json());
 app.use('/api/usuarios', usuarioController(usuarioUseCases));
 app.use('/api/productos', productoController(productoUseCases));
 app.use('/api/pedidos', pedidoController(pedidoUseCases));
+app.use('/api/reportes', require('./infrastructure/http/reportesController')(require('./infrastructure/config/analyticsContainer'), usuarioUseCases));
 
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
